@@ -1,0 +1,165 @@
+package login;
+import java.awt.EventQueue;
+
+import java.sql.*;
+
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import java.awt.Color;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import javax.swing.SwingConstants;
+
+import admin.Admin;
+import connections.Connections;
+
+import java.awt.SystemColor;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JPasswordField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class Login {
+
+	private JFrame frame;
+	private JTextField username;
+	private JPasswordField password;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Login window = new Login();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Login() {
+		initialize();
+		
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setAlwaysOnTop(true);
+		frame.setBackground(SystemColor.info);
+		frame.getContentPane().setFont(new Font("Khmer UI", Font.PLAIN, 36));
+		frame.getContentPane().setForeground(SystemColor.text);
+		frame.getContentPane().setBackground(new Color(0, 139, 139));
+		frame.setBounds(100, 100, 604, 450);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JPanel panel = new JPanel();
+		panel.setForeground(new Color(255, 99, 71));
+		panel.setBackground(new Color(0, 139, 139));
+		panel.setBounds(0, 13, 586, 73);
+		frame.getContentPane().add(panel);
+		
+		JLabel lblLoginAccount = new JLabel("Login Account");
+		lblLoginAccount.setForeground(new Color(255, 255, 255));
+		lblLoginAccount.setFont(new Font("Khmer UI", Font.BOLD, 40));
+		lblLoginAccount.setBackground(Color.WHITE);
+		panel.add(lblLoginAccount);
+		
+		JSeparator separator = new JSeparator();
+		separator.setForeground(new Color(255, 255, 255));
+		separator.setBackground(SystemColor.activeCaption);
+		separator.setBounds(45, 99, 491, 2);
+		frame.getContentPane().add(separator);
+		
+		JLabel lblNewLabel = new JLabel("Username");
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		lblNewLabel.setFont(new Font("Khmer UI", Font.BOLD, 30));
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setBounds(45, 114, 154, 73);
+		frame.getContentPane().add(lblNewLabel);
+		
+		username = new JTextField();
+		username.setForeground(new Color(0, 139, 139));
+		username.setFont(new Font("Khmer UI", Font.PLAIN, 25));
+		username.setHorizontalAlignment(SwingConstants.CENTER);
+		username.setBounds(211, 129, 325, 47);
+		frame.getContentPane().add(username);
+		username.setColumns(10);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPassword.setForeground(new Color(255, 255, 255));
+		lblPassword.setFont(new Font("Khmer UI", Font.BOLD, 30));
+		lblPassword.setBounds(45, 200, 154, 73);
+		frame.getContentPane().add(lblPassword);
+		
+		password = new JPasswordField();
+		password.setForeground(new Color(0, 128, 128));
+		password.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		password.setHorizontalAlignment(SwingConstants.CENTER);
+		password.setBounds(211, 219, 325, 47);
+		frame.getContentPane().add(password);
+		
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setForeground(new Color(255, 255, 255));
+		separator_1.setBackground(SystemColor.activeCaption);
+		separator_1.setBounds(45, 300, 491, 2);
+		frame.getContentPane().add(separator_1);
+		
+		JButton btnLogin = new JButton("Login");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					String name = username.getName();
+					String pass = password.getText();
+					
+					String query = "SELECT * FROM staff WHERE Name LIKE ? AND Password LIKE ?";
+					Connections connection= new Connections();
+					PreparedStatement pStatement= connection.getConnection().prepareStatement(query);
+					pStatement.setString(1, name);
+					pStatement.setString(2, pass);
+					
+					ResultSet set = pStatement.executeQuery();
+					
+					if(pStatement.execute()) {
+						if(name.equals(set.getString(query))) {
+							Admin admin = new Admin();
+							admin.getFrame().setVisible(true);
+							frame.dispose();
+						}
+						else if(username.getText().equals("")) {
+							JOptionPane.showMessageDialog(username, "Incorrect Username or Password");
+						}
+						else {
+							JOptionPane.showMessageDialog(password, "Incorrect Username or Password");
+						}
+					}
+					connection.closeConnection();
+				} catch (Exception e) {
+					// TODO: handle exception
+					System.out.print(e);
+				}
+			}
+		});
+		
+		btnLogin.setForeground(new Color(0, 139, 139));
+		btnLogin.setFont(new Font("Khmer UI", Font.BOLD, 30));
+		btnLogin.setBackground(new Color(255, 255, 255));
+		btnLogin.setBounds(382, 343, 154, 47);
+		frame.getContentPane().add(btnLogin);
+	}
+}
